@@ -62,7 +62,7 @@ if (isstruct(temp))
     
     
     if a_flag
-        rows=length(temp.textdata(:,1))-1; %# of rows - header
+       % rows=length(temp.textdata(:,1))-1;
         
         temp2= [];
         
@@ -73,10 +73,8 @@ if (isstruct(temp))
             str = strrep(str,'(','_');
             str = strrep(str,')','');
             str = strrep(str,'=','');
-            str = strrep(str,'}','');
-            str = strrep(str,'{','');
-            
             str = strrep(str,' ',''); %this will be the substruct name
+            
             
             if i < 3 %first two columns should be textdata, input into new substruct
             %    temp2.(sprintf('%s',str))= {};
@@ -84,17 +82,11 @@ if (isstruct(temp))
         
             else %enter corresponding data into new substrempuct
              %   temp2.(sprintf('%s',str))= [];
-                if i-2 > length(temp.data(1,:)); %if temp.data ends before temp.textdata
+                if i-2 > length(temp.data);
                     
-                    
-                    
-                    temp2(:).(sprintf('%s',str))= NaN(rows,1);
-                   
-                else
+           
+             
                 temp2(:).(sprintf('%s',str))= temp.data(:,i-2);
-                
-                end
-                
             end
             
             
