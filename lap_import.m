@@ -7,8 +7,8 @@
 % function, additional fields:
 % For timeseries data, |sample_times|, |timeseries| (currents in column 1
 % and potentials in column 2) and |macro|.
-% For sweeps, |start_times|, |stop_times|, |sweeps| and |macro|.
-% For spectra, |start_times|, |stop_times|, |spectra| and |macro|.
+% For sweeps, |START_TIME_UTC|, |STOP_TIME_UTC|, |qf| |sweeps| and |macro|.
+% For spectra, |START_TIME_UTC|, |STOP_TIME_UTC|, |spectra| and |macro|.
 % Files such as |B1S| and |V1H_FRQ| that are not struct variables are
 % unaffected and imports normally, as by MATLAB's |importdata| function.
 function [out] = lap_import(filename, varargin)
@@ -34,12 +34,13 @@ if (isstruct(temp))
     
     
     if (size(temp.textdata, 2) == 2)
-        temp.('start_times') = temp.textdata(:,1);
-        temp.('stop_times') = temp.textdata(:,2);
+        temp.('START_TIME_UTC') = temp.textdata(:,1);
+        temp.('STOP_TIME_UTC') = temp.textdata(:,2);
         if (strfind(filename, 'PSD'))
             temp.('spectra') = temp.data(:,end-64:end);
         elseif (~isempty(strfind(filename, 'I1S')) || ...
                 ~isempty(strfind(filename, 'I2S')))
+            temp.('qf') = temp.data(:,3);
             temp.('sweeps') = temp.data(:,4:end);
         end
     elseif (size(temp.textdata, 2) == 1)

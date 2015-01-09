@@ -7,7 +7,7 @@
 % function, additional fields:
 % For timeseries data, |sample_times|, |timeseries| (currents in column 1
 % and potentials in column 2) and |macro|.
-% For sweeps, |start_times|, |stop_times|, |sweeps| and |macro|.
+% For sweeps, |START_TIME_UTC|, |STOP_TIME_UTC|, |sweeps| and |macro|.
 % For spectra, |start_times|, |stop_times|, |spectra| and |macro|.
 % Files such as |B1S| and |V1H_FRQ| that are not struct variables are
 % unaffected and imports normally, as by MATLAB's |importdata| function.
@@ -34,12 +34,13 @@ if (isstruct(temp))
     
     
     if (size(temp.textdata, 2) == 2)
-        temp.('start_times') = temp.textdata(:,1);
-        temp.('stop_times') = temp.textdata(:,2);
+        temp.('START_TIME_UTC') = temp.textdata(:,1);
+        temp.('STOP_TIME_UTC') = temp.textdata(:,2);
         if (strfind(filename, 'PSD'))
             temp.('spectra') = temp.data(:,end-64:end);
         elseif (~isempty(strfind(filename, 'I1S')) || ...
                 ~isempty(strfind(filename, 'I2S')))
+            temp.('qf') = temp.data(:,3);
             temp.('sweeps') = temp.data(:,4:end);
         end
     elseif (size(temp.textdata, 2) == 1)
@@ -62,7 +63,7 @@ if (isstruct(temp))
     
     
     if a_flag
-       % rows=length(temp.textdata(:,1))-1;
+        rows=length(temp.textdata(:,1))-1; %# of rows - header
         
         temp2= [];
         
@@ -73,8 +74,10 @@ if (isstruct(temp))
             str = strrep(str,'(','_');
             str = strrep(str,')','');
             str = strrep(str,'=','');
-            str = strrep(str,' ',''); %this will be the substruct name
+            str = strrep(str,'}','');
+            str = strrep(str,'{','');
             
+            str = strrep(str,' ',''); %this will be the substruct name
             
             if i < 3 %first two columns should be textdata, input into new substruct
             %    temp2.(sprintf('%s',str))= {};
@@ -82,11 +85,17 @@ if (isstruct(temp))
         
             else %enter corresponding data into new substrempuct
              %   temp2.(sprintf('%s',str))= [];
-                if i-2 > length(temp.data);
+                if i-2 > length(temp.data(1,:)); %if temp.data ends before temp.textdata
                     
-           
-             
+                    
+                    
+                    temp2(:).(sprintf('%s',str))= NaN(rows,1);
+                   
+                else
                 temp2(:).(sprintf('%s',str))= temp.data(:,i-2);
+                
+                end
+                
             end
             
             
