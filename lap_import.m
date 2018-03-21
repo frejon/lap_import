@@ -12,6 +12,9 @@
 % Files such as |B1S| and |V1H_FRQ| that are not struct variables are
 % unaffected and imports normally, as by MATLAB's |importdata| function.
 function [out] = lap_import(filename, varargin)
+
+SATURATION_CONSTANT=-1000;
+
 %%
 
 %is this necessary? I thought
@@ -30,7 +33,9 @@ end
 % Add new fields for struct variables:
 if (isstruct(temp))
     
-        
+    %scantemp{1,4}(scantemp{1,4}==SATURATION_CONSTANT)  = NaN;
+   % temp.data(temp.data==SATURATION_CONSTANT)= NaN; %replace saturated values
+   
     
     
     if (size(temp.textdata, 2) == 2)
